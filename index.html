@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>GHOST ELITE - Painel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        document.getElementById('btn-reset').addEventListener('click', async () => {
+            const usersRef = collection(db, 'users');
+            const snapshot = await getDocs(usersRef);
+            const batch = writeBatch(db);
+            
+            snapshot.forEach(doc => {
+                batch.update(doc.ref, { wins: 0, losses: 0 });
+            });
+            
+            await batch.commit();
+            alert('Status redefinidos!');
+        });
+    </script>
+</head>
+<body class="bg-gray-900 text-white font-sans flex">
+    <nav class="w-64 bg-gray-800 p-6 h-screen">
+        <h1 class="text-2xl font-bold mb-8 text-blue-500">GHOST ELITE</h1>
+        <ul>
+            <li class="mb-4"><a href="#" class="text-gray-300 hover:text-white">Dashboard</a></li>
+        </ul>
+    </nav>
+    <main class="flex-1 p-10">
+        <h2 class="text-3xl font-bold mb-6">Painel de Controle</h2>
+        
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md">
+            <h3 class="text-xl mb-4 text-red-400">Zona de Perigo</h3>
+            <p class="text-gray-400 mb-4">Zerar vitorias e derrotas de geral. Moedas ficam intactas.</p>
+            <button id="btn-reset" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Zerar Status
+            </button>
+        </div>
+    </main>
+</body>
+</html>
